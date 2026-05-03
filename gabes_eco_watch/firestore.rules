@@ -1,0 +1,16 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Reports are public for reading (to display on map)
+    match /reports/{report} {
+      allow read: if true;
+      // Only authenticated users can write, or allow anonymous
+      allow write: if request.auth != null || request.auth == null;
+    }
+
+    // User profiles are private
+    match /users/{userId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+  }
+}
